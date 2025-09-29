@@ -35,7 +35,6 @@ services:
       - microservices_network
     depends_on:
       - db:
-        condition: service_started
     environment:
       - APP_ENV=${APP_ENV}
       - APP_DEBUG=${APP_DEBUG}
