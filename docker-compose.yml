@@ -34,7 +34,7 @@ services:
       - user_microservice_network
       - microservices_network
     depends_on:
-      - db:
+      - db
     environment:
       - APP_ENV=${APP_ENV}
       - APP_DEBUG=${APP_DEBUG}
