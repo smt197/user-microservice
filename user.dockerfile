@@ -20,8 +20,7 @@ RUN install-php-extensions \
        redis \
        opcache \
        pcntl \
-       sockets \
-       intl
+       sockets
 
 # Copy application files
 COPY --chown=www-data:www-data . .
