@@ -1,77 +1,74 @@
 version: '3.8'
 
-networks:
-  user_microservice_network:
-    driver: bridge
-  microservices_network:
-    driver: bridge
-# external: true
-
-volumes:
-  dbdata:
-    driver: local
-  user_storage:
-    driver: local
-
 services:
-  # =================================================================
-  # USER MICROSERVICE
-  # =================================================================
-
-  user_app:
+  user-app:
     build:
       context: .
-      dockerfile: supervisor.dockerfile
-    image: ${USER_IMAGE_NAME:-user-microservice}
-    container_name: ${USER_CONTAINER_NAME:-user-app}
-    restart: unless-stopped
-    working_dir: /app
-    ports:
-      - "${USER_PORT:-8082}:80"
-    volumes:
-      - user_storage:/app/storage
-    networks:
-      - user_microservice_network
-      - microservices_network
-    depends_on:
-      - db
+      dockerfile: user.dockerfile
     environment:
+      - AUTORUN_ENABLED=true
+      - AUTORUN_LARAVEL_OCTANE=true
+      - OCTANE_SERVER=frankenphp
+      - OCTANE_HOST=0.0.0.0
+      - OCTANE_PORT=8002
+      - OCTANE_ADMIN_PORT=2019
+      - APP_NAME=${APP_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - OCTANE_STATE_FILE=${OCTANE_STATE_FILE}
       - APP_ENV=${APP_ENV}
-      - APP_DEBUG=${APP_DEBUG}
       - APP_KEY=${APP_KEY}
+      - APP_DEBUG=${APP_DEBUG}
       - APP_URL=${APP_URL}
+      - LOG_CHANNEL=${LOG_CHANNEL}
+      - LOG_STACK=${LOG_STACK}
+      - LOG_DEPRECATIONS_CHANNEL=${LOG_DEPRECATIONS_CHANNEL}
+      - LOG_LEVEL=${LOG_LEVEL}
       - DB_CONNECTION=${DB_CONNECTION}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
+      - SESSION_DRIVER=${SESSION_DRIVER}
+      - SESSION_LIFETIME=${SESSION_LIFETIME}
+      - SESSION_ENCRYPT=${SESSION_ENCRYPT}
+      - SESSION_PATH=${SESSION_PATH}
+      - SESSION_DOMAIN=${SESSION_DOMAIN}
       - QUEUE_CONNECTION=${QUEUE_CONNECTION}
+      - CACHE_STORE=${CACHE_STORE}
+      - CACHE_PREFIX=${CACHE_PREFIX}
+      - MEMCACHED_HOST=${MEMCACHED_HOST}
+      - REDIS_CLIENT=${REDIS_CLIENT}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_PORT}
+      - MAIL_MAILER=${MAIL_MAILER}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
+      - MAIL_FROM_NAME="${APP_NAME}"
       - RABBITMQ_HOST=${RABBITMQ_HOST}
       - RABBITMQ_PORT=${RABBITMQ_PORT}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
       - RABBITMQ_VHOST=${RABBITMQ_VHOST}
-      - CACHE_DRIVER=${CACHE_DRIVER:-file} 
-      - SESSION_DRIVER=${SESSION_DRIVER:-file}
-
-  db:
-    image: mysql:8.0
-    container_name: ${DB_CONTAINER_NAME:-user-service}
-    restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password --bind-address=0.0.0.0
-    environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-user-db}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_HOST: '%'
     volumes:
-      - dbdata:/var/lib/mysql
-      - ./mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+      - user_storage_data:/var/www/html/storage/app
+      - user_logs_data:/var/www/html/storage/logs
     networks:
-      - user_microservice_network
-    ports:
-      - "${DB_PORT_EXTERNAL:-3307}:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
+      - microservices_network
+    restart: unless-stopped
+
+networks:
+  microservices_network:
+    external: true
+
+volumes:
+  user_storage_data:
+    driver: local
+  user_logs_data:
+    driver: local
+  user_db_data:
+    driver: local
