@@ -12,6 +12,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "php-amqplib/php-amqplib": "^3.7",
+        "predis/predis": "^3.2",
         "tailflow/laravel-orion": "^2.23",
         "tymon/jwt-auth": "^2.2",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "^14.3"
