@@ -10,7 +10,7 @@ services:
       - AUTORUN_LARAVEL_OCTANE=true
       - OCTANE_SERVER=frankenphp
       - OCTANE_HOST=0.0.0.0
-      - OCTANE_PORT=8002
+      - OCTANE_PORT=8003
       - OCTANE_ADMIN_PORT=2019
       - APP_NAME=${APP_NAME}
       - JWT_SECRET=${JWT_SECRET}
