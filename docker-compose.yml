@@ -74,6 +74,7 @@ services:
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
       - RABBITMQ_VHOST=${RABBITMQ_VHOST}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
     volumes:
       - storage_data:/var/www/html/storage/app
     networks:
