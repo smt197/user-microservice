@@ -32,8 +32,8 @@ return [
     'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
         '%s%s%s',
         'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
-        ',authentificationservice.test,authentificationservice.test:8080',
-        ',user-microservice.test,user-microservice.test:8080'
+        ',backend.192.168.1.10.sslip.io,backend.192.168.1.10.sslip.io:8001',
+        ',user.192.168.1.10.sslip.io,user.192.168.1.10.sslip.io:8003'
     ))),
 
     /*
