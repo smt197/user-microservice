@@ -16,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // $middleware->statefulApi();
         $middleware->alias([
-            // 'auth' => \App\Http\Middleware\ValidateJwtWithAuthService::class,
+            'auth' => \App\Http\Middleware\ValidateJwtWithAuthService::class,
         ]);
         // $middleware->append(
         //     \Illuminate\Session\Middleware\StartSession::class,
