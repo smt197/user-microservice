@@ -15,35 +15,47 @@ class UserProfileController extends Controller
     protected $model = UserProfile::class;
 
     /**
-     * Récupérer le profil de l'utilisateur connecté.
+     * Récupérer le profil de l'utilisateur connecté
      */
     public function currentUserProfile(Request $request)
     {
-        $userId = Auth::id();
+        // Récupérer les données utilisateur validées par le middleware
+        $authUser = $request->attributes->get('auth_user');
 
-        if (!$userId) {
+        if (!$authUser) {
             return response()->json(['message' => 'User not authenticated'], 401);
         }
 
-        // Chercher le profil. `findOrFail` renverra une erreur 404 si non trouvé, ce qui est approprié.
-        $userProfile = UserProfile::findOrFail($userId);
+        // Chercher ou créer le profil utilisateur
+        $userProfile = UserProfile::firstOrCreate(
+            ['auth_user_id' => $authUser['id']],
+            [
+                'name' => $authUser['name'],
+                'email' => $authUser['email'],
+                'bio' => '',
+                'avatar' => null,
+                'phone' => null,
+                'address' => null,
+                'preferences' => []
+            ]
+        );
 
         return response()->json($userProfile);
     }
 
     /**
-     * Mettre à jour le profil de l'utilisateur connecté.
+     * Mettre à jour le profil de l'utilisateur connecté
      */
     public function updateCurrentUserProfile(Request $request)
     {
-        $userId = Auth::id();
+        // Récupérer les données utilisateur validées par le middleware
+        $authUser = $request->attributes->get('auth_user');
 
-        if (!$userId) {
+        if (!$authUser) {
             return response()->json(['message' => 'User not authenticated'], 401);
         }
 
         $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
             'bio' => 'nullable|string|max:500',
             'avatar' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -51,8 +63,13 @@ class UserProfileController extends Controller
             'preferences' => 'nullable|array',
         ]);
 
-        $userProfile = UserProfile::findOrFail($userId);
-        $userProfile->update($validated);
+        $userProfile = UserProfile::updateOrCreate(
+            ['auth_user_id' => $authUser['id']],
+            array_merge($validated, [
+                'name' => $authUser['name'],
+                'email' => $authUser['email'],
+            ])
+        );
 
         return response()->json($userProfile);
     }
@@ -73,18 +90,30 @@ class UserProfileController extends Controller
         return ['auth_user_id', 'name', 'email', 'created_at', 'updated_at'];
     }
 
-    /**
-     * Assure que la route principale d'Orion (`/api/user-profiles`) 
-     * ne retourne que le profil de l'utilisateur connecté.
-     */
-    protected function buildIndexQuery($request, array $requestedRelations): \Illuminate\Database\Eloquent\Builder
+    public function includes(): array
     {
-        $query = parent::buildIndexQuery($request, $requestedRelations);
-        
-        if (Auth::check()) {
-            $query->where('auth_user_id', Auth::id());
+        return [];
+    }
+
+    public function alwaysIncludes(): array
+    {
+        return [];
+    }
+
+    public function aggregates(): array
+    {
+        return [];
+    }
+
+    /**
+     * Override pour filtrer automatiquement par l'utilisateur connecté
+     */
+    public function resolveResourcePaginate($query, $request, $paginationLimit)
+    {
+        $authUser = $request->attributes->get('auth_user');
+        if ($authUser) {
+            $query->where('auth_user_id', $authUser['id']);
         }
-        
-        return $query;
+        return parent::resolveResourcePaginate($query, $request, $paginationLimit);
     }
 }
