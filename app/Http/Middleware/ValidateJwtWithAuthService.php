@@ -24,7 +24,7 @@ class ValidateJwtWithAuthService
 
         try {
             // Appeler le service d'authentification pour valider le token
-            $authServiceUrl = env('AUTH_SERVICE_URL', 'http://backend.192.168.1.10.sslip.io:8001');
+            $authServiceUrl = env('AUTH_SERVICE_URL', 'http://backend.192.168.1.10.sslip.io');
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
