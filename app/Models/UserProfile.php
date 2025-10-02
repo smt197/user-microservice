@@ -3,10 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable; // Changed from Model
-use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Model;
 
-class UserProfile extends Authenticatable implements JWTSubject // Implemented JWTSubject
+class UserProfile extends Model
 {
     use HasFactory;
 
@@ -30,7 +29,7 @@ class UserProfile extends Authenticatable implements JWTSubject // Implemented J
         'auth_user_id',
         'name',
         'email',
-        'bio',               // Champs étendus uniquement
+        'bio',
         'avatar',
         'phone',
         'address',
@@ -40,24 +39,4 @@ class UserProfile extends Authenticatable implements JWTSubject // Implemented J
     protected $casts = [
         'preferences' => 'array',
     ];
-
-    /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
-     *
-     * @return mixed
-     */
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
-     */
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
 }
