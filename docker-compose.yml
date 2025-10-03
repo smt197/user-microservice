@@ -12,7 +12,6 @@ services:
       - OCTANE_HOST=0.0.0.0
       - OCTANE_PORT=8003
       - OCTANE_ADMIN_PORT=2019
-      # Laravel environment variables
       - APP_NAME=${APP_NAME}
       - JWT_SECRET=${JWT_SECRET}
       - OCTANE_STATE_FILE=${OCTANE_STATE_FILE}
@@ -83,7 +82,7 @@ services:
 
 networks:
   microservices_network:
-    driver: bridge
+    external: true
 
 volumes:
   storage_data:
